@@ -31,24 +31,27 @@ export default function Login({ navigation }) {
 
   const { request, response, promptAsync } = useGoogleAuth(); // Usa el hook de Google
 
+  const sendDataFromGoogle = async (token) => {
+    const credential = GoogleAuthProvider.credential(token);
+    try {
+      const userCredential = await signInWithCredential(auth, credential);
+      const user = userCredential.user;
+      console.log("Usuario autenticado con Google:", user);
+      navigation.replace("Home");
+    } catch (error) {
+      console.error("Error al autenticar con Google:", error);
+    }
+  };
+
   useEffect(() => {
     if (response?.type === "success") {
-      const { authentication } = response;
-      const credential = GoogleAuthProvider.credential(authentication.idToken);
-
-      const signInWithGoogle = async () => {
-        try {
-          setLoading(true);
-          await signInWithCredential(auth, credential);
-          navigation.replace("Home"); // Navega a la pantalla principal
-        } catch (error) {
-          setError("Error al iniciar sesión con Google.");
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      signInWithGoogle();
+      sendDataFromGoogle(response.authentication?.idToken || "");
+    } else if (response?.type === "dismiss") {
+      console.error("El usuario canceló el inicio de sesión con Google.");
+      setError("Inicio de sesión cancelado. Por favor, inténtalo de nuevo.");
+    } else if (response) {
+      console.error("Error en la autenticación de Google:", response);
+      setError("Error en la autenticación con Google. Intenta nuevamente.");
     }
   }, [response]);
 

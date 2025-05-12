@@ -14,8 +14,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { Video } from "expo-av";
 import { getFirestore, collection, getDocs } from "firebase/firestore"; // Asegúrate de importar correctamente
 import styles from "../Styles/Styles";
+import { useActionSheet } from "@expo/react-native-action-sheet";
 
 export default function Inicio({ navigation }) {
+  const { showActionSheetWithOptions } = useActionSheet();
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [refreshing, setRefreshing] = useState(false); // Estado para el pull-to-refresh
@@ -58,7 +60,24 @@ export default function Inicio({ navigation }) {
   );
 
   const handlePress = () => {
-    navigation.navigate("FormCar");
+    const options = ["Agregar un vehiculo", "Crear una renta"]
+    const cancelButtonIndex = 2;
+
+    showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+        title: "Selecciona una opción",
+        message: "¿Qué deseas hacer?",
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          navigation.navigate("FormCar");
+        } else if (buttonIndex === 1) {
+          navigation.navigate("FormRenta");
+        }
+      }
+    )
   };
 
   return (
