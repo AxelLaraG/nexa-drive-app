@@ -33,10 +33,13 @@ export default function Inicio({ navigation }) {
     try {
       const db = getFirestore();
       const querySnapshot = await getDocs(collection(db, "vehicles"));
-      const vehicles = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const vehicles = querySnapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .filter((vehicle) => vehicle.status === "Activo") // Filtrar vehículos disponibles
+        .sort((a, b) => a.id - b.id); // Ordenar por ID de menor a mayor
       setData(vehicles);
     } catch (error) {
       console.error("Error al obtener los datos:", error); // Agrega manejo de errores
@@ -44,7 +47,7 @@ export default function Inicio({ navigation }) {
   };
 
   const handlePressCard = (item) => {
-    navigation.navigate("FormEdit", { vehicle: item });
+    navigation.navigate("FormRenta", { vehicle: item });
   };
 
   const onRefresh = async () => {
@@ -113,11 +116,6 @@ export default function Inicio({ navigation }) {
             value={search}
             onChangeText={setSearch}
           />
-
-          {/* Botón flotante */}
-          <TouchableOpacity style={styles.fab} onPress={handlePress}>
-            <Ionicons name="add" size={28} color="white" />
-          </TouchableOpacity>
 
           {/* Listado de Tarjetas */}
           <FlatList

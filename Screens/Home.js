@@ -3,6 +3,7 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerI
 import Inicio from "../Tabs/Inicio";
 import Sucursales from "../Tabs/Sucursales";
 import Creditos from "../Tabs/Creditos";
+import UserRents from "../Tabs/UserRents";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/FirebaseConf"; // Ajusta según tu ruta
 
@@ -36,6 +37,7 @@ export default function Home({ navigation }) {
     >
       <Drawer.Screen name="Inicio" component={Inicio} />
       <Drawer.Screen name="Sucursales" component={Sucursales} />
+      <Drawer.Screen name="Rentas" component={UserRents} />
       <Drawer.Screen name="Creditos" component={Creditos} />
     </Drawer.Navigator>
   );

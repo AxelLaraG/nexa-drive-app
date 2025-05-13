@@ -10,12 +10,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import styles from "../Styles/Styles";
 import ShakeView from "../Components/ShakeView";
 import { auth, db } from "../firebase/FirebaseConf"; // Importa Firebase
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
@@ -31,8 +26,8 @@ export default function Login({ navigation }) {
 
   const { request, response, promptAsync } = useGoogleAuth(); // Usa el hook de Google
 
-  const sendDataFromGoogle = async (token) => {
-    const credential = GoogleAuthProvider.credential(token);
+  const sendDataFromGoogle = async (idToken, accessToken) => {
+    const credential = GoogleAuthProvider.credential(idToken, accessToken);
     try {
       const userCredential = await signInWithCredential(auth, credential);
       const user = userCredential.user;
@@ -45,7 +40,10 @@ export default function Login({ navigation }) {
 
   useEffect(() => {
     if (response?.type === "success") {
-      sendDataFromGoogle(response.authentication?.idToken || "");
+      sendDataFromGoogle(
+        response.authentication.idToken,
+        response.authentication.accessToken
+      );
     } else if (response?.type === "dismiss") {
       console.error("El usuario canceló el inicio de sesión con Google.");
       setError("Inicio de sesión cancelado. Por favor, inténtalo de nuevo.");
@@ -152,6 +150,8 @@ export default function Login({ navigation }) {
               </Text>
             </TouchableOpacity>
 
+
+            {/*}
             <View style={styles.buttonsContainer}>
               <TouchableOpacity
                 style={styles.googleLoginButton}
@@ -161,7 +161,7 @@ export default function Login({ navigation }) {
                 <Icon name="google" style={styles.googleIcon} />
                 <Text>Inicia sesión con Google</Text>
               </TouchableOpacity>
-            </View>
+            </View>*/}
           </View>
         </View>
       </ScrollView>

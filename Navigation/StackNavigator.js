@@ -3,8 +3,8 @@ import Login from '../Screens/Login';
 import Register from '../Screens/Register';
 import Home from '../Screens/Home';
 import Inicio from '../Tabs/Inicio';
-import FormCar from '../Screens/FormCar';
-import EditCar from '../Screens/EditCar';
+import UserRents from '../Tabs/UserRents';
+import EditRent from '../Screens/EditRent';
 import FormRenta from '../Screens/FormRenta';
 
 const Stack = createNativeStackNavigator();
@@ -16,8 +16,8 @@ export default function StackNavigator() {
         <Stack.Screen name="Register" options={{headerShown:false}} component={Register} />
         <Stack.Screen name="Home" options={{headerShown:false}} component={Home} />
         <Stack.Screen name="Inicio" options={{headerShown:false}} component={Inicio} />
-        <Stack.Screen name="FormCar" options={{headerShown:false}} component={FormCar} />
-        <Stack.Screen name="FormEdit" options={{headerShown:false}} component={EditCar} />
+        <Stack.Screen name="UserRents" options={{headerShown:false}} component={UserRents} />
+        <Stack.Screen name="EditRent" options={{headerShown:false}} component={EditRent} />
         <Stack.Screen name="FormRenta" options={{headerShown:false}} component={FormRenta} />
        </Stack.Navigator>
     );
