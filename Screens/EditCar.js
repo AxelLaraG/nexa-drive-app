@@ -49,21 +49,68 @@ export default function EidtCar({ navigation, route }) {
   };
 
   const handleDelete = async () => {
-    setLoading(true);
-    setError("");
+    Alert.alert(
+      "Eliminar Vehículo",
+      "¿Deseas realizar un eliminado lógico o un eliminado real?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Eliminado Lógico (Para usuarios)",
+          onPress: async () => {
+            setLoading(true);
+            setError("");
 
-    try {
-      const vehicleRef = doc(db, "vehicles", vehicle.id_real);
-      await deleteDoc(vehicleRef);
+            try {
+              const vehicleRef = doc(db, "vehicles", vehicle.id_real);
+              await updateDoc(vehicleRef, { status: "Inactivo" });
 
-      Alert.alert("Éxito", "El vehículo ha sido eliminado correctamente.");
-      navigation.navigate("Home");
-    } catch (error) {
-      console.error("Error al eliminar el vehículo:", error);
-      Alert.alert("Error", "Hubo un problema al eliminar el vehículo.");
-    } finally {
-      setLoading(false);
-    }
+              Alert.alert(
+                "Éxito",
+                "El vehículo ha sido marcado como inactivo correctamente."
+              );
+              navigation.navigate("Home");
+            } catch (error) {
+              console.error("Error al realizar el eliminado lógico:", error);
+              Alert.alert(
+                "Error",
+                "Hubo un problema al realizar el eliminado lógico."
+              );
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+        {
+          text: "Eliminado Real(Para administradores y usuarios)",
+          onPress: async () => {
+            setLoading(true);
+            setError("");
+
+            try {
+              const vehicleRef = doc(db, "vehicles", vehicle.id_real);
+              await deleteDoc(vehicleRef);
+
+              Alert.alert(
+                "Éxito",
+                "El vehículo ha sido eliminado correctamente."
+              );
+              navigation.navigate("Home");
+            } catch (error) {
+              console.error("Error al realizar el eliminado real:", error);
+              Alert.alert(
+                "Error",
+                "Hubo un problema al realizar el eliminado real."
+              );
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleCamera = async () => {
