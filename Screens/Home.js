@@ -5,15 +5,17 @@ import Sucursales from "../Tabs/Sucursales";
 import Creditos from "../Tabs/Creditos";
 import UserRents from "../Tabs/UserRents";
 import { signOut } from "firebase/auth";
-import { auth } from "../firebase/FirebaseConf"; // Ajusta según tu ruta
+import { auth } from "../firebase/FirebaseConf";
 
 const Drawer = createDrawerNavigator();
 
 export default function Home({ navigation }) {
+  const userId = auth.currentUser?.uid; // Obtén el userId del usuario logueado
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      navigation.replace("Login"); // o como se llame tu pantalla de login
+      navigation.replace("Login");
     } catch (error) {
       console.error("Error al cerrar sesión", error);
     }
@@ -37,9 +39,8 @@ export default function Home({ navigation }) {
     >
       <Drawer.Screen name="Inicio" component={Inicio} />
       <Drawer.Screen name="Sucursales" component={Sucursales} />
-      <Drawer.Screen name="Rentas" component={UserRents} />
+      <Drawer.Screen name="Rentas" component={UserRents} initialParams={{ userId }} />
       <Drawer.Screen name="Creditos" component={Creditos} />
     </Drawer.Navigator>
   );
 }
-

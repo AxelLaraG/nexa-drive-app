@@ -14,16 +14,17 @@ export default function UserRents({ navigation, route }) {
   const [rents, setRents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const userId = route.params?.userId || "defaultUserId"; // ID del usuario logueado
+  const userId = route.params?.userId;
 
   useEffect(() => {
+    console.log("userId recibido:", userId); // Depuración
     fetchUserRents();
   }, []);
 
   const fetchUserRents = async () => {
     try {
       const rentsCollection = collection(db, "rents");
-      const q = query(rentsCollection, where("userId", "==", userId));
+      const q = query(rentsCollection, where("user_id", "==", userId));
       const querySnapshot = await getDocs(q);
 
       const userRents = querySnapshot.docs.map((doc) => ({
@@ -31,6 +32,7 @@ export default function UserRents({ navigation, route }) {
         ...doc.data(),
       }));
 
+      console.log("Rentas encontradas:", userRents); // Depuración
       setRents(userRents);
     } catch (error) {
       console.error("Error al obtener las rentas:", error);
@@ -45,15 +47,15 @@ export default function UserRents({ navigation, route }) {
   };
 
   const renderRentItem = ({ item }) => {
-    const returnDate = new Date(item.returnDate);
+    const returnDate = new Date(item.return_date);
     const currentDate = new Date();
 
     return (
       <View style={styles.card}>
         <Text style={styles.cardText}>ID Renta: {item.id}</Text>
-        <Text style={styles.cardText}>Vehículo: {item.vehicle}</Text>
-        <Text style={styles.cardText}>Fecha de Renta: {item.rentDate}</Text>
-        <Text style={styles.cardText}>Fecha de Devolución: {item.returnDate}</Text>
+        <Text style={styles.cardText}>Vehículo: {item.vehicle_id}</Text>
+        <Text style={styles.cardText}>Fecha de Renta: {item.rent_date}</Text>
+        <Text style={styles.cardText}>Fecha de Devolución: {item.return_date}</Text>
         {returnDate > currentDate && (
           <TouchableOpacity
             style={styles.formBtn}
@@ -71,6 +73,8 @@ export default function UserRents({ navigation, route }) {
       <Text style={styles.title}>Mis Rentas</Text>
       {loading ? (
         <Text>Cargando...</Text>
+      ) : rents.length === 0 ? (
+        <Text>No se encontraron rentas para este usuario.</Text>
       ) : (
         <FlatList
           data={rents}

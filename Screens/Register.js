@@ -158,12 +158,17 @@ export default function Register({ navigation }) {
           </Text>
         </TouchableOpacity>
 
-        <View style={styles.buttonsContainer}>
-          <TouchableOpacity style={styles.googleLoginButton}>
-            <Icon name="google" style={styles.googleIcon} />
-            <Text>Inicia sesión con Google</Text>
-          </TouchableOpacity>
-        </View>
+        {/*}
+            <View style={styles.buttonsContainer}>
+              <TouchableOpacity
+                style={styles.googleLoginButton}
+                onPress={() => promptAsync()} // Inicia el flujo de Google
+                disabled={!request || loading}
+              >
+                <Icon name="google" style={styles.googleIcon} />
+                <Text>Inicia sesión con Google</Text>
+              </TouchableOpacity>
+            </View>*/}
       </View>
     </View>
   );

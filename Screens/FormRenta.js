@@ -1,55 +1,38 @@
-import React, { useState, useEffect } from "react";
-import {
-  Text,
-  TouchableOpacity,
-  View,
-  Alert,
-  ScrollView,
-} from "react-native";
+import React, { useState } from "react";
+import { Text, TouchableOpacity, View, Alert, ScrollView } from "react-native";
 import CustomDatePicker from "../Components/CustomDatePicker";
 import styles from "../Styles/Styles";
-import { Picker } from "@react-native-picker/picker";
 import { db } from "../firebase/FirebaseConf";
-import { collection, getDocs, addDoc, doc, updateDoc } from "firebase/firestore";
+import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
-export default function FormRenta({ navigation }) {
+export default function FormRenta({ route, navigation }) {
+  const { vehicle } = route.params; // Recibe el vehículo seleccionado
   const [rentDate, setRentDate] = useState(new Date());
   const [returnDate, setReturnDate] = useState(new Date());
   const [showRentDatePicker, setShowRentDatePicker] = useState(false);
   const [showReturnDatePicker, setShowReturnDatePicker] = useState(false);
-  const [vehicleId, setVehicleId] = useState("");
-  const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    const fetchVehicles = async () => {
-      try {
-        const querySnapshot = await getDocs(
-          collection(db, "vehicles")
-        );
-        const activeVehicles = querySnapshot.docs
-          .filter((doc) => doc.data().status === "Activo")
-          .map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-        setVehicles(activeVehicles);
-      } catch (error) {
-        console.error("Error al obtener los vehículos:", error);
-      }
-    };
-
-    fetchVehicles();
-  }, []);
 
   const handleSubmit = async () => {
     setLoading(true);
     setError("");
 
-    if (!vehicleId || !rentDate || !returnDate) {
+    if (!rentDate || !returnDate) {
       setError("Por favor completa todos los campos");
+      setLoading(false);
+      return;
+    }
+
+    if (!(rentDate instanceof Date) || isNaN(rentDate)) {
+      setError("La fecha de renta no es válida");
+      setLoading(false);
+      return;
+    }
+
+    if (!(returnDate instanceof Date) || isNaN(returnDate)) {
+      setError("La fecha de devolución no es válida");
       setLoading(false);
       return;
     }
@@ -59,6 +42,8 @@ export default function FormRenta({ navigation }) {
       setLoading(false);
       return;
     }
+
+    console.log("Filtros pasados");
 
     try {
       const auth = getAuth();
@@ -74,15 +59,15 @@ export default function FormRenta({ navigation }) {
 
       // Verificar si las fechas son mayores a la fecha actual
       if (rentDate > currentDate || returnDate > currentDate) {
-        const vehicleDocRef = doc(db, "vehicles", vehicleId);
+        const vehicleDocRef = doc(db, "vehicles", vehicle.id_real);
         await updateDoc(vehicleDocRef, { status: "Inactivo" });
       }
 
       const rentsCollectionRef = collection(db, "rents");
       await addDoc(rentsCollectionRef, {
-        vehicle_id: vehicleId,
-        rent_date: rentDate.toISOString(),
-        return_date: returnDate.toISOString(),
+        vehicle_id: vehicle.id,
+        rent_date: rentDate.toISOString().split("T")[0],
+        return_date: returnDate.toISOString().split("T")[0],
         user_id: user.uid,
       });
 
@@ -145,28 +130,17 @@ export default function FormRenta({ navigation }) {
                 onChange={(event, selectedDate) => {
                   setShowReturnDatePicker(false);
                   if (event.type === "set" && selectedDate) {
-                    setReturnDate(selectedDate);
+                    setReturnDate(new Date(selectedDate)); // Asegúrate de que sea un objeto Date
                   }
                 }}
               />
             )}
 
-            {/* ID del vehículo */}
-            <Text style={styles.label}>ID del vehículo</Text>
-            <Picker
-              selectedValue={vehicleId}
-              style={styles.input}
-              onValueChange={(itemValue) => setVehicleId(itemValue)}
-            >
-              <Picker.Item label="Selecciona un vehículo" value="" />
-              {vehicles.map((vehicle) => (
-                <Picker.Item
-                  key={vehicle.id}
-                  label={`${vehicle.brand} - ${vehicle.model}`}
-                  value={vehicle.id}
-                />
-              ))}
-            </Picker>
+            {/* Vehículo seleccionado */}
+            <Text style={styles.label}>Vehículo seleccionado</Text>
+            <View style={[styles.input, { backgroundColor: "#f0f0f0" }]}>
+              <Text>{`${vehicle.brand} - ${vehicle.model}`}</Text>
+            </View>
 
             {/* Botón de envío */}
             <TouchableOpacity style={styles.formBtn} onPress={handleSubmit}>
