@@ -1,10 +1,10 @@
 {
   "expo": {
     "name": "rentacar-usr",
-    "slug": "rentacar-usr",
+    "slug": "rentacar-admin",
     "schema": "myappredirect",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "unspecified",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,

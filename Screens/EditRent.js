@@ -13,7 +13,11 @@ import { db } from "../firebase/FirebaseConf";
 
 export default function EditRent({ route, navigation }) {
   const { rent } = route.params; // Recibe los datos de la renta seleccionada
-  const [returnDate, setReturnDate] = useState(new Date(rent.return_date));
+  const [returnDate, setReturnDate] = useState(() => {
+    // rent.return_date es "YYYY-MM-DD"
+    const [year, month, day] = rent.return_date.split("-").map(Number);
+    return new Date(year, month - 1, day); // new Date(año, mes-1, día) crea la fecha en hora local
+  });
   const [vehicleName, setVehicleName] = useState(""); // Estado para el nombre del vehículo
   const [showReturnDatePicker, setShowReturnDatePicker] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -55,6 +59,7 @@ export default function EditRent({ route, navigation }) {
     }
 
     try {
+      console.log(rent.id)
       const rentDocRef = doc(db, "rents", rent.id);
       await updateDoc(rentDocRef, {
         return_date: returnDate.toISOString().split("T")[0],

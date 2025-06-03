@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Text,
   View,
   FlatList,
   TouchableOpacity,
   Alert,
+  ScrollView
 } from "react-native";
 import styles from "../Styles/Styles";
 import { db } from "../firebase/FirebaseConf";
@@ -16,10 +18,11 @@ export default function UserRents({ navigation, route }) {
 
   const userId = route.params?.userId;
 
-  useEffect(() => {
-    console.log("userId recibido:", userId); // Depuración
-    fetchUserRents();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUserRents();
+    }, [userId])
+  );
 
   const fetchUserRents = async () => {
     try {
@@ -31,8 +34,6 @@ export default function UserRents({ navigation, route }) {
         id: doc.id,
         ...doc.data(),
       }));
-
-      console.log("Rentas encontradas:", userRents); // Depuración
       setRents(userRents);
     } catch (error) {
       console.error("Error al obtener las rentas:", error);
@@ -69,19 +70,22 @@ export default function UserRents({ navigation, route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Mis Rentas</Text>
-      {loading ? (
-        <Text>Cargando...</Text>
-      ) : rents.length === 0 ? (
-        <Text>No se encontraron rentas para este usuario.</Text>
-      ) : (
-        <FlatList
-          data={rents}
-          keyExtractor={(item) => item.id}
-          renderItem={renderRentItem}
-        />
-      )}
-    </View>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Mis Rentas</Text>
+        {loading ? (
+          <Text>Cargando...</Text>
+        ) : rents.length === 0 ? (
+          <Text>No se encontraron rentas para este usuario.</Text>
+        ) : (
+          <FlatList
+            data={rents}
+            keyExtractor={(item) => item.id}
+            renderItem={renderRentItem}
+            scrollEnabled={false} // Desactiva el scroll del FlatList ya que está dentro del ScrollView
+          />
+        )}
+      </View>
+    </ScrollView>
   );
 }

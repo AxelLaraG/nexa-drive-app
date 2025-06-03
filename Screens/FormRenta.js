@@ -64,12 +64,14 @@ export default function FormRenta({ route, navigation }) {
       }
 
       const rentsCollectionRef = collection(db, "rents");
-      await addDoc(rentsCollectionRef, {
+      const docRef = await addDoc(rentsCollectionRef, {
         vehicle_id: vehicle.id,
         rent_date: rentDate.toISOString().split("T")[0],
         return_date: returnDate.toISOString().split("T")[0],
         user_id: user.uid,
       });
+      // Agregar el campo "uid" igual al ID generado
+      await updateDoc(docRef, { uid: docRef.id });
 
       setLoading(false);
 
