@@ -26,7 +26,7 @@ Aplicación móvil desarrollada en React Native (Expo) diseñada para digitaliza
 
 1. Clonar el repositorio:
    ```bash
-   git clone [https://github.com/AxelLaraG/nexa-drive-app.git](https://github.com/AxelLaraG/nexa-drive-app.git)
+   git clone https://github.com/AxelLaraG/nexa-drive-app.git
    cd nexa-drive-app
    ```
 2. Instalar dependencias:
